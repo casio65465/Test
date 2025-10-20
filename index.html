@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coming Soon</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Arial', sans-serif;
+        background: #fdf6f0;
+        overflow: hidden;
+        cursor: none;
+        position: relative;
+    }
+
+    h1 {
+        font-size: 3em;
+        text-align: center;
+        z-index: 2;
+        background: linear-gradient(90deg, #ff6a00, #fddb92);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: fadeInOut 2.5s infinite;
+        margin: 0;
+        position: relative;
+    }
+
+    @keyframes fadeInOut {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 1; }
+    }
+
+    h1::after {
+        content: '';
+        display: block;
+        width: 60%;
+        height: 4px;
+        margin: 15px auto 0;
+        background: linear-gradient(90deg, #ff6a00, #fddb92, #ff6a00);
+        border-radius: 2px;
+        animation: glow 3s infinite;
+    }
+
+    @keyframes glow {
+        0%, 100% { transform: scaleX(0); opacity: 0; }
+        50% { transform: scaleX(1); opacity: 1; }
+    }
+
+    .particle {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: radial-gradient(circle, #ff6a00, #fddb92);
+        border-radius: 50%;
+        pointer-events: none;
+        opacity: 0.7;
+        filter: blur(4px);
+        mix-blend-mode: screen;
+        transition: transform 0.1s linear;
+    }
+
+    /* Mute/Unmute button */
+    #muteBtn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 5;
+        padding: 10px 15px;
+        background: #ff6a00;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 14px;
+        opacity: 0.8;
+        transition: opacity 0.3s;
+    }
+
+    #muteBtn:hover {
+        opacity: 1;
+    }
+</style>
+</head>
+<body>
+
+<h1>We will be back soon</h1>
+
+<!-- Audio element -->
+<audio id="bgMusic" loop>
+    <source src="your-music-file.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+
+<!-- Mute/Unmute button -->
+<button id="muteBtn">Mute</button>
+
+<script>
+    const music = document.getElementById('bgMusic');
+    const muteBtn = document.getElementById('muteBtn');
+
+    // Start music automatically with subtle fade-in
+    music.volume = 0; // start at 0 volume
+    music.play().catch(() => {
+        console.log("Autoplay blocked, click anywhere to start music.");
+    });
+
+    let targetVolume = 0.5; // desired volume
+    const fadeInInterval = setInterval(() => {
+        if (music.volume < targetVolume) {
+            music.volume = Math.min(music.volume + 0.01, targetVolume);
+        } else {
+            clearInterval(fadeInInterval);
+        }
+    }, 100); // fade-in step every 0.1s
+
+    // Mute/Unmute functionality
+    muteBtn.addEventListener('click', () => {
+        if (music.muted) {
+            music.muted = false;
+            muteBtn.textContent = 'Mute';
+        } else {
+            music.muted = true;
+            muteBtn.textContent = 'Unmute';
+        }
+    });
+
+    // Floating particles
+    const numParticles = 60;
+    const particles = [];
+
+    for (let i = 0; i < numParticles; i++) {
+        const p = document.createElement('div');
+        p.classList.add('particle');
+        p.style.left = `${Math.random() * window.innerWidth}px`;
+        p.style.top = `${Math.random() * window.innerHeight}px`;
+        p.style.width = `${Math.random() * 15 + 5}px`;
+        p.style.height = p.style.width;
+        document.body.appendChild(p);
+        particles.push(p);
+    }
+
+    document.addEventListener('mousemove', (e) => {
+        particles.forEach((p, index) => {
+            const speed = (index + 1) / 10;
+            const x = e.clientX - window.innerWidth / 2;
+            const y = e.clientY - window.innerHeight / 2;
+            p.style.transform = `translate(${x * speed * 0.02}px, ${y * speed * 0.02}px)`;
+        });
+    });
+
+    function floatParticles() {
+        particles.forEach((p) => {
+            const x = parseFloat(p.style.left) + Math.random() * 2 - 1;
+            const y = parseFloat(p.style.top) + Math.random() * 2 - 1;
+            p.style.left = `${x}px`;
+            p.style.top = `${y}px`;
+        });
+        requestAnimationFrame(floatParticles);
+    }
+
+    floatParticles();
+</script>
+</body>
+</html>
